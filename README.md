@@ -15,13 +15,13 @@ Usage
 		KBEngine.create(args);
 
 	2: Implment the KBE defined entity (including the client part)
-		See: kbengine\kbengine_demos_assets\scripts\entities.xml£¬hasClient="true" need to implment
+		See: kbengine\kbengine_demos_assets\scripts\entities.xml(hasClient="true") need to implment
 			<Account hasClient="true"></Account>
 			<Monster hasClient="true"></Monster>
 			<Gate hasClient="true"></Gate>
 			<Space/>
 
-			KBEngine.Account = KBEngine.GameObject.extend(
+			KBEngine.Account = KBEngine.Entity.extend(
 			{
 				// entity initialization
 				__init__ : function()
@@ -35,21 +35,23 @@ Usage
 			entity.cellCall("cell_func", 1, "arg2", "argN")
 
 	3: Monitor KBE-plugins event
-		var StartSceneLayer = Class.extend({
-		{
-			installEvents : function()
+		For example:
+			var StartSceneLayer = Class.extend({
 			{
-				KBEngine.Event.registerOut("onConnectStatus", this, "onConnectStatus");
-			}
+				installEvents : function()
+				{
+					KBEngine.Event.register("onConnectionState", this, "onConnectionState");
+				}
 
-			onConnectStatus : function(success)
-			{
-				// KBE-plugins event fired
+				onConnectionState : function(success)
+				{
+					// KBE-plugins event fired
+				}
 			}
-		}
 
 	4: Fire events to the KBE-plugins
-		KBEngine.Event.fireIn("login", "stringAccount", "stringPasswd", System.Text.Encoding.UTF8.GetBytes("kbengine_unity3d_demo"));
+		For example:
+			KBEngine.Event.fire("login", this.usernamebox.getString(), this.passwordbox.getString(), "kbengine_cocos2d_js_demo");  
 
 
 
@@ -179,7 +181,7 @@ KBE-Plugin fire-out events(KBE => Unity):
 			Event-datas: 
 				No datas.
 
-		onReLoginBaseapp
+		onReloginBaseapp
 			Description: 
 				Relogin to baseapp.
 
@@ -210,7 +212,7 @@ KBE-Plugin fire-out events(KBE => Unity):
 				uint16: retcode
 					http://kbengine.org/docs/configuration/server_errors.html
 
-		onReLoginBaseappFailed
+		onReloginBaseappFailed
 			Description: 
 				Relogin baseapp failed.
 
@@ -218,7 +220,7 @@ KBE-Plugin fire-out events(KBE => Unity):
 				uint16: retcode
 					http://kbengine.org/docs/configuration/server_errors.html
 
-		onReLoginBaseappSuccessfully
+		onReloginBaseappSuccessfully
 			Description: 
 				Relogin baseapp success.
 
@@ -252,19 +254,44 @@ KBE-Plugin fire-out events(KBE => Unity):
 				string: key
 
 	Network events:
-		onConnectStatus
+		onConnectionState
 			Description: 
 				Status of connection server.
 
 			Event-datas: 
 				bool: success or fail
 
-		onDisableConnect
+		onDisconnected
 			Description: 
 				Status of connection server.
 
 			Event-datas: 
 				No datas.
+
+	Download events:
+		onStreamDataStarted
+			Description: 
+				Start downloading data.
+
+			Event-datas: 
+				uint16: resouce id
+				uint32: data size
+				string: description
+
+		onStreamDataRecv
+			Description: 
+				Receive data.
+
+			Event-datas: 
+				uint16: resouce id
+				bytes: datas
+
+		onStreamDataCompleted
+			Description: 
+				The downloaded data is completed.
+
+			Event-datas: 
+				uint16: resouce id
 
 
 
@@ -296,7 +323,7 @@ KBE-Plugin fire-in events(Unity => KBE):
 					Data will be recorded into the KBE account database, you can access the datas through the script layer.
 					If you use third-party account system, datas will be submitted to the third-party system.
 
-	reLoginBaseapp
+	reloginBaseapp
 			Description: 
 				Relogin to baseapp.
 
